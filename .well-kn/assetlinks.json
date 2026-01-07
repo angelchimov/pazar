@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "io.github.angelchimov.twa",
+        "sha256_cert_fingerprints": ["8F:EB:D0:DE:3A:A7:FC:6F:2F:16:CD:C0:5C:E7:BC:27:EF:B1:04:B7:21:38:4B:E4:B8:DF:66:58:D6:56:55:6D"]
+      }
+    }]

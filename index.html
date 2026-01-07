@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Пазар</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#4CAF50">
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 15px;
+        background: #f0f0f0;
+    }
+
+    .title {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .title img {
+        width: 32px;
+        height: 32px;
+    }
+
+    h2 {
+        margin: 0;
+        color: #333;
+    }
+
+    .box {
+        background: white;
+        padding: 15px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    label {
+        font-weight: bold;
+        margin-bottom: 5px;
+        display: block;
+    }
+
+    input {
+        width: 100%;
+        padding: 10px;
+        font-size: 18px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    .row {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .row div {
+        flex: 1;
+    }
+
+    .result {
+        font-size: 22px;
+        font-weight: bold;
+        margin-top: 10px;
+        color: #222;
+    }
+
+    .buttons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+    }
+
+    button {
+        flex: 1;
+        padding: 10px;
+        font-size: 16px;
+        border: none;
+        border-radius: 8px;
+        background-color: #4CAF50;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #45a049;
+    }
+
+    .rate {
+        margin-top: 20px;
+        font-size: 18px;
+        text-align: center;
+        color: #555;
+    }
+</style>
+</head>
+<body>
+
+<div class="title">
+    <h2>Пазар</h2>
+    <img src="icon-small.png" alt="icon">
+</div>
+
+<div class="box">
+    <label>Цена в €</label>
+    <input type="number" id="price" value="" step="0.01">
+
+    <label>Плащам</label>
+    <div class="row">
+        <div>
+            <span>€</span>
+            <input type="number" id="payEur" value="" step="0.01">
+        </div>
+        <div>
+            <span>лв</span>
+            <input type="number" id="payBgn" value="" step="0.01">
+        </div>
+    </div>
+
+    <div class="buttons">
+        <button onclick="clearPaid()">🧹 Изчисти плащане</button>
+        <button onclick="clearAll()">🧼 Изчисти всичко</button>
+    </div>
+</div>
+
+<div class="box">
+    <div class="result">Доплащане: <span id="remaining">0</span></div>
+    <div class="result">Ресто: <span id="change">0</span></div>
+    <div class="rate">Курс: 1.95583</div>
+</div>
+
+<script>
+function calculate() {
+    let price = parseFloat(document.getElementById("price").value) || 0;
+    let rate = 1.95583;
+    let payEur = parseFloat(document.getElementById("payEur").value) || 0;
+    let payBgn = parseFloat(document.getElementById("payBgn").value) || 0;
+
+    let payBgnInEur = payBgn / rate;
+    let totalPaid = payEur + payBgnInEur;
+
+    let remaining = price - totalPaid;
+    let change = totalPaid - price;
+
+    // Convert remaining to BGN
+    let remainingBgn = remaining * rate;
+    let changeBgn = change * rate;
+
+    document.getElementById("remaining").textContent =
+        remaining > 0
+        ? `${remaining.toFixed(2)} € / ${remainingBgn.toFixed(2)} лв`
+        : `0.00 € / 0.00 лв`;
+
+    document.getElementById("change").textContent =
+        change > 0
+        ? `${change.toFixed(2)} € / ${changeBgn.toFixed(2)} лв`
+        : `0.00 € / 0.00 лв`;
+}
+
+function clearPaid() {
+    document.getElementById("payEur").value = "";
+    document.getElementById("payBgn").value = "";
+    calculate();
+}
+
+function clearAll() {
+    document.getElementById("price").value = "";
+    clearPaid();
+    calculate();
+}
+
+document.querySelectorAll("input").forEach(el => {
+    el.addEventListener("input", calculate);
+});
+
+calculate();
+
+// Register service worker
+if ("serviceWorker" in navigator) {
+    navigator.serviceWorker.register("service-worker.js");
+}
+</script>
+
+</body>
+</html>
